@@ -1,18 +1,23 @@
 package techlab.practicas.c8.preentrega.productos;
 
 public abstract class Producto {
+    private int id;
     private String nombre;
     private double precio;
     private int stock;
 
     // Variable estática para contar cuántos productos se crean
-    private static int contadorProductos = 0;
+    private static int contador = 0;
 
     public Producto(String nombre, double precio, int stock) {
+        this.id = ++contador;
         setNombre(nombre);
         setPrecio(precio);
         setStock(stock);
-        contadorProductos++;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getNombre() {
@@ -53,13 +58,13 @@ public abstract class Producto {
 
     // Método para mostrar la info del producto
     public void mostrarInformacion() {
-        System.out.println("Nombre: " + nombre + " | Precio: $" + precio + " | Stock: " + stock);
+        System.out.println("ID: " + id + " | Nombre: " + nombre + " | Precio: $" + precio + " | Stock: " + stock);
     }
 
     public abstract double calcularPrecioFinal();
 
     // Getter de la variable estática
     public static int getContadorProductos() {
-        return contadorProductos;
+        return contador;
     }
 }

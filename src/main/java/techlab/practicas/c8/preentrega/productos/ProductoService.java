@@ -13,4 +13,13 @@ public class ProductoService {
         }
         throw new ProductoNoEncontradoException(nombre);
     }
+
+    public static Producto buscarProductoPorId(List<Producto> productos, int id) throws ProductoNoEncontradoException {
+        for (Producto producto : productos) {
+            if (producto.getId() == id) {
+                return producto;
+            }
+        }
+        throw new ProductoNoEncontradoException(String.valueOf(id));
+    }
 }

@@ -60,7 +60,6 @@ public class Main {
                         break;
                     }
                     for (int i = 0; i < productos.size(); i++) {
-                        System.out.println("[" + i + "] ");
                         productos.get(i).mostrarInformacion();
                     }
                     break;
@@ -81,52 +80,74 @@ public class Main {
                     break;
 
                 case "4":
-                    System.out.println("Índice del producto a eliminar: ");
-                    int idx = Integer.parseInt(scanner.nextLine());
-                    if (idx < productos.size()) {
-                        productos.remove(idx);
-                        System.out.println("Producto eliminado");
+                    System.out.println("Ingrese el ID del producto a eliminar: ");
+                    int idAEliminar = Integer.parseInt(scanner.nextLine());
+
+                    Producto productoAEliminar = null;
+                    for (Producto p : productos) {
+                        if (p.getId() == idAEliminar) {
+                            productoAEliminar = p;
+                            break;
+                        }
+                    }
+
+                    if (productoAEliminar != null) {
+                        System.out.println("¿Está seguro de eliminar el producto " + productoAEliminar.getNombre() + "? (s/n)");
+                        String confirmacion = scanner.nextLine();
+                        if (confirmacion.equalsIgnoreCase("s")) {
+                            productos.remove(productoAEliminar);
+                            System.out.println("✔ Producto eliminado");
+                        } else {
+                            System.out.println("❌ Operación cancelada");
+                        }
                     } else {
-                        System.out.println("Índice no válido");
+                        System.out.println("❌ No se encontró un producto con ese ID.");
                     }
                     break;
 
                 case "5":
-                    Pedido pedido = new Pedido();
+                    Pedido pedidoNuevo = new Pedido();
+
                     while (true) {
-                        System.out.println("Nombre de producto a agregar al pedido o 'fin' para terminar: ");
-                        String prodNomb = scanner.nextLine();
-                        if (prodNomb.equalsIgnoreCase("fin")) break;
+                        System.out.println("Ingrese nombre de producto a agregar al pedido o 'fin' para terminar: ");
+                        String nombreProducto = scanner.nextLine();
+
+                        if (nombreProducto.equalsIgnoreCase("fin")) break;
+
                         try {
-                            Producto producto = ProductoService.buscarProductoPorNombre(productos, prodNomb);
-                            System.out.println("Cantidad: ");
+                            Producto producto = ProductoService.buscarProductoPorNombre(productos, nombreProducto);
+
+                            System.out.println("Ingrese cantidad: ");
                             int cantidad = Integer.parseInt(scanner.nextLine());
 
                             if (producto.getStock() >= cantidad) {
-                                for (int i = 0; i < cantidad; i++) {
-                                    pedido.agregarProducto(producto);
-                                }
+                                pedidoNuevo.agregarProducto(producto, cantidad);
                                 producto.setStock(producto.getStock() - cantidad);
                                 System.out.println("Producto agregado al pedido");
                             } else {
                                 throw new StockInsuficienteException(producto.getNombre(), cantidad, producto.getStock());
                             }
+
                         } catch (ProductoNoEncontradoException | StockInsuficienteException e) {
-                            System.out.println(e.getMessage());
+                            System.out.println("❌ " + e.getMessage());
+                        } catch (NumberFormatException e) {
+                            System.out.println("❌ Ingrese un número válido");
                         }
                     }
-                    pedidos.add(pedido);
-                    pedido.mostrarPedido();
+
+                    pedidos.add(pedidoNuevo);
+                    System.out.println("Pedido registrado");
+                    pedidoNuevo.mostrarPedido();
                     break;
 
                 case "6":
                     System.out.println("Pedidos:");
                     if( pedidos.isEmpty()) {
-                        System.out.println("No hay pedidos");
+                        System.out.println("No hay pedidos registrados.");
                     }
-                    for (int i = 0; i < pedidos.size(); i++) {
-                        System.out.println("\n--- Pedido #" + (i+1) + " ---" );
-                        pedidos.get(i).mostrarPedido();
+                    for (Pedido p : pedidos) {
+                        p.mostrarPedido();
+                        System.out.println("--------------------------------");
                     }
                     break;
 
